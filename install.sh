@@ -1,14 +1,18 @@
 #!/bin/bash
 
-echo "🚀 Iniciando o provisionamento dos Dotfiles..."
+# 1. Descobre o caminho REAL de onde este script está guardado
+# Não importa de onde ele seja chamado, BASEDIR será sempre /home/vscode/dotfiles
+BASEDIR=$(dirname "$(readlink -f "$0")")
 
-# Garante que a pasta base existe
+echo "🚀 Iniciando provisionamento sênior em: $BASEDIR"
+
+# 2. Garante a estrutura de pastas
 mkdir -p ~/.config
 
-# Remove qualquer configuração padrão de Neovim que a nuvem tenha criado
+# 3. Remove links quebrados ou pastas padrão que o GitHub cria
 rm -rf ~/.config/nvim
 
-# Cria a ponte (symlink) usando o diretório atual de onde o GitHub baixou o repo
-ln -s $(pwd)/.config/nvim ~/.config/nvim
+# 4. Cria a ponte usando o caminho absoluto que descobrimos no passo 1
+ln -s "$BASEDIR/.config/nvim" ~/.config/nvim
 
-echo "✅ Neovim linkado com sucesso!"
+echo "✅ Configuração vinculada com sucesso!"
