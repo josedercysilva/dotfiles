@@ -1,18 +1,21 @@
 #!/bin/bash
 
-# 1. Descobre o caminho REAL de onde este script está guardado
-# Não importa de onde ele seja chamado, BASEDIR será sempre /home/vscode/dotfiles
+# Aborta a execução imediatamente se qualquer comando falhar (Fail-Fast)
+set -e
+
+# Resolve o caminho absoluto do diretório do script para garantir 
+# execução agnóstica de contexto (independente do $PWD de chamada).
 BASEDIR=$(dirname "$(readlink -f "$0")")
 
-echo "🚀 Iniciando provisionamento sênior em: $BASEDIR"
+echo "🚀 Iniciando provisionamento da infraestrutura em: $BASEDIR"
 
-# 2. Garante a estrutura de pastas
+# Garante a existência do diretório base de configuração do usuário (Idempotência)
 mkdir -p ~/.config
 
-# 3. Remove links quebrados ou pastas padrão que o GitHub cria
+# Purga configurações pré-existentes ou symlinks corrompidos para forçar o estado desejado
 rm -rf ~/.config/nvim
 
-# 4. Cria a ponte usando o caminho absoluto que descobrimos no passo 1
+# Provisiona o link simbólico apontando para o repositório versionado (Single Source of Truth)
 ln -s "$BASEDIR/.config/nvim" ~/.config/nvim
 
-echo "✅ Configuração vinculada com sucesso!"
+echo "✅ Configuração vinculada com sucesso (symlink estabelecido)!"
