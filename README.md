@@ -2,22 +2,30 @@
 
 Este repositório contém a minha infraestrutura como código (IaC) para o ambiente de desenvolvimento Neovim, com foco em compilação de documentos LaTeX de alta performance.
 
-A arquitetura foi desenhada para ser **Zero-Touch** e **Environment-Agnostic** (agnóstica ao ambiente). O mesmo código roda perfeitamente na minha máquina local (Manjaro Linux) e em containers efêmeros na nuvem (GitHub Codespaces / Alpine Linux).
+A arquitetura foi desenhada para ser **Zero-Touch** na nuvem e facilmente replicável em máquinas locais. O motor principal é o `lazy.nvim`, configurado para baixar dependências (como o `vimtex`) sob demanda.
 
-## 🏗️ Arquitetura e Decisões Técnicas
+---
 
-* **Gerenciamento de Plugins:** `lazy.nvim` (Bootstrapping automático, sem necessidade de instalação manual prévia).
-* **Core Business:** `VimTeX` (Carregamento imediato `lazy = false` para disponibilidade instantânea da API de compilação).
-* **Motor de Compilação:** `Tectonic` (Substitui o pesado TeX Live. Baixa pacotes do CTAN sob demanda, ideal para VMs e containers leves).
-* **Roteamento de Display Dinâmico:** O arquivo `init.lua` inspeciona variáveis de ambiente (`os.getenv("CODESPACES")`) para decidir o visualizador de PDF:
-  * **Nuvem (Web):** Usa visualizador genérico integrado ao VS Code Web.
-  * **Local (Manjaro):** Usa `Zathura` via RPC para live-reload sem travar o terminal.
+## ☁️ Deploy na Nuvem (GitHub Codespaces / Docker)
 
-## 🚀 Como fazer o Deploy (Máquina Local)
+Se você está rodando isso via nuvem, **não é necessário clonar este repositório manualmente.**
 
-Para clonar e ativar esta configuração em uma nova máquina Linux/macOS, execute os passos abaixo. 
-*(Nota: O GitHub Codespaces faz esse processo automaticamente via automação nativa).*
+A injeção destes dotfiles é feita de forma 100% automatizada através do `devcontainer.json` do projeto principal. O container baixa este repositório e executa o provisionamento sozinho via `postCreateCommand`.
 
-**1. Clone o repositório:**
-```bash
-git clone [https://github.com/josedercysilva/dotfiles.git](https://github.com/josedercysilva/dotfiles.git) ~/dotfiles
+---
+
+## 💻 Deploy Local (Linux / macOS)
+
+Se você formatou sua máquina física (ex: Manjaro Linux) e quer configurar o Neovim diretamente no sistema operacional (Bare Metal), execute os 2 passos abaixo:
+
+**1. Clone o repositório para a sua máquina:**
+`bash
+git clone https://github.com/josedercy/dotfiles.git ~/dotfiles
+`
+
+**2. Execute o script de instalação (Ele criará a ponte de forma segura):**
+`bash
+bash ~/dotfiles/install.sh
+`
+
+*Na próxima vez que você digitar `nvim`, o gerenciador `lazy.nvim` fará o bootstrap automático.*
