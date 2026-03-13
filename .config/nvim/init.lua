@@ -1,23 +1,39 @@
+-- =====================================================================
+-- NEOVIM CONFIGURATION - CLOUD & LOCAL ENVIRONMENT
+-- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- 1. Core Settings (UI e Formatação)
+-- ---------------------------------------------------------------------
+-- Define os padrões de visualização e indentação estrita (4 espaços)
 vim.opt.number = true
 vim.opt.mouse = 'a'
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
--- ==========================================
--- Configuração Profissional do VimTeX
--- ==========================================
-
--- Define o Zathura como o visualizador de PDF padrão
-vim.g.vimtex_view_method = 'zathura'
-
+-- ---------------------------------------------------------------------
+-- 2. VimTeX (Ambiente LaTeX Profissional)
+-- ---------------------------------------------------------------------
+-- Motor de compilação: Tectonic 
+-- Escolhido por baixar pacotes sob demanda, dispensando instalação do TeX Live.
 vim.g.vimtex_compiler_method = 'tectonic'
 
--- Evita que a janela de QuickFix abra automaticamente a cada pequeno warning
+-- Detecção Dinâmica de Hardware (Environment-Aware)
+-- Se estiver rodando na nuvem (Codespaces/Navegador), usa visualizador genérico web.
+-- Se rodar localmente no Manjaro (Desktop), usa o Zathura nativamente.
+if os.getenv("CODESPACES") == "true" then
+    vim.g.vimtex_view_method = 'general'
+else
+    vim.g.vimtex_view_method = 'zathura'
+end
+
+-- Workflow Limpo: 
+-- Evita que a janela de QuickFix "roube" o foco a cada pequeno warning do LaTeX
 vim.g.vimtex_quickfix_mode = 0
 
--- Define o sabor padrão do TeX
+-- Força o parser do VimTeX a interpretar tudo como LaTeX moderno
 vim.g.tex_flavor = 'latex'
 
--- Opcional: Ocultar as mensagens de compilação bem-sucedida para manter a tela limpa
+-- Mantém os logs do compilador visíveis para debug (mudar para 1 para ocultar)
 vim.g.vimtex_compiler_silent = 0
