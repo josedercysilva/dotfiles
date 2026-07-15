@@ -1,4 +1,4 @@
-# ⚙️ Cloud & Local Dotfiles (Neovim + LaTeX)
+# Cloud & Local Dotfiles (Neovim + LaTeX)
 
 Este repositório contém a minha infraestrutura como código (IaC) para o ambiente de desenvolvimento Neovim, com foco em compilação de documentos LaTeX de alta performance.
 
@@ -6,7 +6,7 @@ A arquitetura foi desenhada para ser **Zero-Touch** na nuvem e facilmente replic
 
 ---
 
-## ☁️ Deploy na Nuvem (GitHub Codespaces / Docker)
+##  Deploy na Nuvem (GitHub Codespaces / Docker)
 
 Se você está rodando isso via nuvem, **não é necessário clonar este repositório manualmente.**
 
@@ -14,7 +14,7 @@ A injeção destes dotfiles é feita de forma 100% automatizada através do `dev
 
 ---
 
-## 💻 Deploy Local (Linux / macOS)
+## Deploy Local (Linux / macOS)
 
 Se você formatou sua máquina física (ex: Manjaro Linux) e quer configurar o Neovim diretamente no sistema operacional (Bare Metal), execute os 2 passos abaixo:
 
