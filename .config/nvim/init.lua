@@ -1,15 +1,7 @@
--- =====================================================================
--- NEOVIM DOTFILES: ENVIRONMENT-AGNOSTIC SETUP
--- Objetivo: Garantir reprodutibilidade zero-touch em qualquer máquina
--- (Local Manjaro ou Cloud/Codespaces) focada em compilação LaTeX.
--- =====================================================================
 
--- ---------------------------------------------------------------------
--- 1. Auto-Provisionamento (Bootstrapping do Lazy.nvim)
--- ---------------------------------------------------------------------
--- Garante que o gerenciador de pacotes seja instalado de forma idempotente.
--- Isso elimina a necessidade de rodar scripts manuais ao clonar os dotfiles
--- em um novo container ou máquina limpa.
+vim.opt.clipboard = "unnamedplus"
+
+-- 1. Bootstrapping do Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   vim.fn.system({
@@ -23,48 +15,52 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- ---------------------------------------------------------------------
--- 2. Registro de Dependências (Plugins)
--- ---------------------------------------------------------------------
+-- 2. Declaração e Configuração de Plugins
 require("lazy").setup({
-    {
-        "lervag/vimtex",
-        -- Desativamos o lazy-loading para o VimTeX porque compilação de 
-        -- documentos é o core business deste ambiente específico. 
-        -- Queremos a API do plugin pronta no milissegundo em que o editor abrir.
+    
+    -- Suporte a LaTeX
+    { 
+        "lervag/vimtex", 
         lazy = false, 
-    }
+    },
+
+    -- Treesitter (Highlight semântico)
+    {
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        opts = {
+            ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "verilog" },
+            highlight = { enable = true },
+            indent = { enable = true },
+        },
+        config = function(_, opts)
+            local status, ts_configs = pcall(require, "nvim-treesitter.configs")
+            if status then
+                ts_configs.setup(opts)
+            else
+                require("nvim-treesitter").setup(opts)
+            end
+        end,
+    },
+
+    -- LSP Config (Servidor de Linguagem Verible - API Neovim 0.11+)
+    { 
+        "neovim/nvim-lspconfig",
+        config = function()
+            -- Configura os parâmetros do servidor usando a API nativa
+            vim.lsp.config.verible = {
+                root_dir = vim.fs.root(0, {".git"}),
+            }
+            
+            -- Habilita o servidor nativamente
+            vim.lsp.enable("verible")
+        end
+    },
 })
 
--- ---------------------------------------------------------------------
--- 3. Padronização de UX e Editor
--- ---------------------------------------------------------------------
--- Mantém a consistência visual e de espaçamento independentemente do terminal host
-vim.opt.number = true
-vim.opt.mouse = 'a'
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
+vim.diagnostic.config({
+    virtual_text = false,
+    signs = false,
+    underline = false,
+})
 
--- ---------------------------------------------------------------------
--- 4. Workflow VimTeX e Integração de Hardware
--- ---------------------------------------------------------------------
--- Motor de compilação: Tectonic. 
--- Motivo: Elimina a dependência de instalações monolíticas (TeX Live). 
--- O binário resolve dependências do CTAN on-the-fly, ideal para containers efêmeros.
-vim.g.vimtex_compiler_method = 'tectonic'
-
--- Roteamento Dinâmico de Display (Environment-Aware Viewer)
--- Inspeciona variáveis de ambiente para evitar crash de servidor gráfico (X11/Wayland).
-if os.getenv("CODESPACES") == "true" then
-    -- Em Cloud (Web): Delega a renderização para a extensão do VS Code na mesma aba.
-    vim.g.vimtex_view_method = 'general'
-else
-    -- Local (Manjaro): Usa o Zathura via daemon RPC para live-reload nativo.
-    vim.g.vimtex_view_method = 'zathura'
-end
-
--- Otimização de Foco (Redução de Ruído Visual)
-vim.g.vimtex_quickfix_mode = 0         -- Impede o QuickFix de roubar o cursor em warnings triviais
-vim.g.tex_flavor = 'latex'             -- Força o parser a não confundir LaTeX com plain TeX
-vim.g.vimtex_compiler_silent = 0       -- Mantém stdout ativo para debug de pacotes CTAN ausentes
