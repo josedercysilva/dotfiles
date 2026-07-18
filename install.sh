@@ -7,7 +7,7 @@ set -e
 # execução agnóstica de contexto (independente do $PWD de chamada).
 BASEDIR=$(dirname "$(readlink -f "$0")")
 
-echo "🚀 Iniciando provisionamento da infraestrutura em: $BASEDIR"
+echo " Iniciando provisionamento da infraestrutura em: $BASEDIR"
 
 # Garante a existência do diretório base de configuração do usuário (Idempotência)
 mkdir -p ~/.config
@@ -18,4 +18,4 @@ rm -rf ~/.config/nvim
 # Provisiona o link simbólico apontando para o repositório versionado (Single Source of Truth)
 ln -s "$BASEDIR/.config/nvim" ~/.config/nvim
 
-echo "✅ Configuração vinculada com sucesso (symlink estabelecido)!"
+echo " Configuração vinculada com sucesso (symlink estabelecido)!"
